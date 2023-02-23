@@ -6,6 +6,7 @@ public class InputNode extends Node{
 
   public InputNode(float bias, float[] weights, Node[] pulls) throws Exception {
     super(bias, weights, pulls);
+    
   }
   
 }
