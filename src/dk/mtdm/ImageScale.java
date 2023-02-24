@@ -7,12 +7,12 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class ImageResizer{
+public class ImageScale{
   public static void main(String[] args) {
     int[] size = findBiggest();
     
-    for (int i = 0; i < 10; i++) {
-      for (int j = 1; j < 1001; j++){
+    for (int i = 0; i < 1; i++) {
+      for (int j = 1; j < 10; j++){
         String path = "src\\dk\\mtdm\\MNISTDataset\\numbers\\" + i + "\\" + i + "_" + j +".jpg";
         BufferedImage img = null;
         try {
@@ -21,9 +21,9 @@ public class ImageResizer{
         } catch (IOException e) {
           System.out.println(e);
         }
-        BufferedImage resizedImage = new BufferedImage(size[1], size[2], BufferedImage.TYPE_INT_RGB);
+        BufferedImage resizedImage = new BufferedImage(size[0], size[1], BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics2D = resizedImage.createGraphics();
-        graphics2D.drawImage(img, 0, 0, size[1], size[2], null);
+        graphics2D.drawImage(img, 0, 0, size[0], size[1], null);
         graphics2D.dispose();
         img = resizedImage;
         
