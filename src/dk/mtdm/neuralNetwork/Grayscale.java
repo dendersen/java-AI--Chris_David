@@ -24,6 +24,8 @@ public class Grayscale {
     } catch (IOException e) {
       System.out.println(e);
     }
+
+    
     //Get width and height of image
     int width = img.getWidth();
     int height = img.getHeight();
