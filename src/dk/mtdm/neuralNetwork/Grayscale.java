@@ -45,7 +45,7 @@ public class Grayscale {
     
     //Make image file
     try {
-      file = new File("D:\\Image\\Output.jpg");
+      file = new File("Image\\Output.jpg");
       ImageIO.write(img, "jpg", file);
     } catch (Exception e) {
       System.out.println(e);
