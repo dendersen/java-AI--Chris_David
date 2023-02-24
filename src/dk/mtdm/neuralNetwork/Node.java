@@ -12,6 +12,7 @@ public class Node {
    * @param pulls the nodes that are to be treated as inputs
    * @throws Exception if pulls is of different length than weights
    */
+  protected Node(){}
   public Node(float bias, float[] weights, Node[] pulls) throws Exception{
     this.bias = bias;
     this.weights = weights;
