@@ -1,4 +1,4 @@
-package dk.mtdm.neuralNetwork;
+package dk.mtdm;
 import java.io.File;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
