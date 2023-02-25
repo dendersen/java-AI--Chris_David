@@ -1,10 +1,13 @@
 package dk.mtdm.neuralNetwork;
 
+import java.util.function.Function;
+
 public class Node {
-  private float bias;
-  private float[] weights;
-  private Float output;
-  private Node[] pulls;
+  protected float bias;
+  protected float[] weights;
+  protected Float output;
+  protected Node[] pulls;
+  protected Function<? super Float, ? extends Float> activationFunction;
   /**
    * 
    * @param bias the biasses of the neural network
@@ -13,10 +16,11 @@ public class Node {
    * @throws Exception if pulls is of different length than weights
    */
   protected Node(){}
-  public Node(float bias, float[] weights, Node[] pulls) throws Exception{
+  public Node(float bias, float[] weights, Node[] pulls, Function<? super Float, ? extends Float> ActivationFunction) throws Exception{
     this.bias = bias;
     this.weights = weights;
     this.pulls = pulls;
+    this.activationFunction = ActivationFunction;
     
     if(this.pulls.length != this.weights.length){
       throw new Exception("pulls and weights are not same lenght");
@@ -30,8 +34,8 @@ public class Node {
     for (int i = 0; i < this.weights.length; i++) {
       out += pulls[i].getValue() * this.weights[i];
     }
-    output = out;
-    return out;
+    output = activationFunction.apply(out);
+    return output;
   }
   public float getValue(){
     if(output == null){

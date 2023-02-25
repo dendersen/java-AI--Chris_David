@@ -12,7 +12,7 @@ public class ImageScale{
     int[] size = findBiggest();
     
     for (int i = 0; i < 1; i++) {
-      for (int j = 1; j < 10; j++){
+      for (int j = 1; j < 100; j++){
         String path = "src\\dk\\mtdm\\MNISTDataset\\numbers\\" + i + "\\" + i + "_" + j +".jpg";
         BufferedImage img = null;
         try {
