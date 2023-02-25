@@ -12,7 +12,6 @@ public class InputNode extends Node{
     img = input;
     x = ID_X;
     y = ID_Y;
-    calc();
   }
   @Override
   public float calc(){
@@ -23,4 +22,9 @@ public class InputNode extends Node{
   public void setBias(float bias){}
   @Override
   public void setWeights(float[] weights){}
+
+  public void setPicture(BufferedImage input){
+    img = input;
+    calc();
+  }
 }

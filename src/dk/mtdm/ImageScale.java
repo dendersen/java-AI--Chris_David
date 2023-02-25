@@ -3,6 +3,7 @@ package dk.mtdm;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -10,10 +11,13 @@ import javax.imageio.ImageIO;
 public class ImageScale{
   public static void main(String[] args) {
     int[] size = findBiggest();
-    
-    for (int i = 0; i < 1; i++) {
-      for (int j = 1; j < 100; j++){
-        String path = "src\\dk\\mtdm\\MNISTDataset\\numbers\\" + i + "\\" + i + "_" + j +".jpg";
+    System.out.println("\nwriting");
+    for (int i = 0; i < 10; i++) {
+      for (int j = 1; j < 1001; j++){
+        if(j%200 == 0){
+          System.out.println(((i)*1000+j) + "/" + 10000 + "\tcomplete");
+        }
+        String path = Main.imagePath  + i + "\\" + i + "_" + j +".jpg";
         BufferedImage img = null;
         try {
           File file = new File(path);
@@ -35,14 +39,42 @@ public class ImageScale{
         }
       }
     }
+    save(size[0], size[1]);
+  }
+
+  private static void save(int width, int height){
+    try{
+      File file = new File(Main.imagePath +"maxSize.txt");
+      if(file.createNewFile()){
+        System.out.println("file created: " + file.getName());
+      }else {
+        System.out.println("file already exists.");
+      }
+    }catch (IOException e){
+      System.out.println("an error occured while making file");
+      e.printStackTrace();
+    }
+    try {
+      FileWriter myWriter = new FileWriter(Main.imagePath + "maxSize.txt");
+      myWriter.write(width + " " + height);
+      myWriter.close();
+      System.out.println("Successfully wrote to the file.");
+    } catch (IOException e) {
+      System.out.println("An error occurred.");
+      e.printStackTrace();
+    }
   }
 
   private static int[] findBiggest() {
     int width = 0;
     int height = 0;
+    System.out.println("loading");
     for (int i = 0; i < 10; i++) {
       for (int j = 1; j < 1001; j++){
-        String path = "src\\dk\\mtdm\\MNISTDataset\\numbers\\" + i + "\\" + i + "_" + j +".jpg";
+        if(j%200 == 0){
+          System.out.println(((i)*1000+j) + "/" + 10000 + "\tcomplete");
+        }
+        String path = Main.imagePath  + i + "\\" + i + "_" + j +".jpg";
         BufferedImage img = null;
         try {
           File file = new File(path);
@@ -58,7 +90,7 @@ public class ImageScale{
         }
       }
     }
-    int[] out = {height,width};
+    int[] out = {height/2,width/2};
     return out;
   }
 

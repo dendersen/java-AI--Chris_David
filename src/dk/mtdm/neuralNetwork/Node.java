@@ -1,5 +1,6 @@
 package dk.mtdm.neuralNetwork;
 
+import java.awt.image.BufferedImage;
 import java.util.function.Function;
 
 public class Node {
@@ -49,10 +50,32 @@ public class Node {
   public void setBias(float bias) {
     this.bias = bias;
   }
+  public float getBias() {
+    return this.bias;
+  }
+  public void modBias(float bias) {
+    this.bias += bias;
+  }
   public void setWeights(float[] weights) throws Exception {
     if(this.pulls.length != weights.length){
       throw new Exception("pulls and weights are not same lenght");
     }
     this.weights = weights;
   }
+  public float[] getWeights() {
+    return this.weights.clone();
+  }
+  public int getWeightLength(){
+    return this.weights.length;
+  }
+  public void modWeights(float[] weights) throws Exception {
+    if(this.pulls.length != weights.length){
+      throw new Exception("pulls and weights are not same lenght");
+    }
+    for (int i = 0; i < weights.length; i++) {
+      this.weights[i] += weights[i];
+    }
+  }
+
+  public void setPicture(BufferedImage input){}
 }

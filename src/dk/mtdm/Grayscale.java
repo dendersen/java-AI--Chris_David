@@ -14,8 +14,11 @@ import javax.imageio.ImageIO;
 public class Grayscale {
   public static void main(String[] args){
     for (int i = 1; i < 1001; i++) {
+      if(i % 50 == 0){
+        System.out.println((i*10) + "/" + 10000 + " completed");
+      }
       for (int j = 0; j < 10; j++) {
-        String path = "src\\dk\\mtdm\\MNISTDataset\\numbers\\" + j + "\\" + j + "_" + i + ".jpg";
+        String path = Main.imagePath + j + "\\" + j + "_" + i + ".jpg";
         BufferedImage img = null;
         File file;
 
