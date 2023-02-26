@@ -17,7 +17,7 @@ public class ImageScale{
         if(j%200 == 0){
           System.out.println(((i)*1000+j) + "/" + 10000 + "\tcomplete");
         }
-        String path = Main.imagePath  + i + "\\" + i + "_" + j +".jpg";
+        String path = Main.imagePathGet + i + "\\" + i + "_" + j +".jpg";
         BufferedImage img = null;
         try {
           File file = new File(path);
@@ -32,7 +32,7 @@ public class ImageScale{
         img = resizedImage;
         
         try {
-          File file = new File(path);
+          File file = new File(Main.imagePath + i + "\\" + i + "_" + j +".jpg");
           ImageIO.write(img, "jpg", file);
         } catch (Exception e) {
           System.out.println(e);
@@ -74,7 +74,7 @@ public class ImageScale{
         if(j%200 == 0){
           System.out.println(((i)*1000+j) + "/" + 10000 + "\tcomplete");
         }
-        String path = Main.imagePath  + i + "\\" + i + "_" + j +".jpg";
+        String path = Main.imagePathGet  + i + "\\" + i + "_" + j +".jpg";
         BufferedImage img = null;
         try {
           File file = new File(path);

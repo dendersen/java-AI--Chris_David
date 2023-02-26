@@ -7,11 +7,15 @@ import javax.imageio.ImageIO;
 
 import dk.mtdm.Main;
 
-public class NetworkManager {
+public class NetworkManager extends Thread {
   private int highestID;
   private Node[][] network;
   private int minNumber;
   private int maxNumber;
+  private float[][][] results;
+  private boolean calculating = false;
+  private MultiNetworkManager parent;
+  private int ID;
   /**
    * 
    * @param testIDend highest ID to be tested (can be understood as testsize) (exlusive)
@@ -19,11 +23,12 @@ public class NetworkManager {
    * @param minNumber the lowest number to be tested (inclusive)
    * @param maxNumber the highest number to be tested (inclusive)
    */
-  public NetworkManager(int testIDEnd, int[] networkSize, int minNumber, int maxNumber){
+  public NetworkManager(int testIDEnd, int[] networkSize, int minNumber, int maxNumber, MultiNetworkManager resultLoad, int ID){
     highestID = testIDEnd;
     this.minNumber = minNumber;
     this.maxNumber = maxNumber;
-
+    this.parent = resultLoad;
+    this.ID = ID;
 
     //intialize array
     {
@@ -74,6 +79,7 @@ public class NetworkManager {
         }
       }
     }
+    results = new float[10][this.highestID][this.maxNumber - this.minNumber + 1];
   }
 
   private float RandomBias() {
@@ -102,15 +108,19 @@ public class NetworkManager {
     }
   }
 
-  public float[][][] calcALL(){
-    float[][][] results = new float[10][this.highestID][this.maxNumber - this.minNumber + 1];
+  @Override
+  public void run(){
+    calculating = true;
     for (int i = this.minNumber; i <= this.maxNumber; i++) {
       for (int j = 1; j < highestID; j++) {
         setDataPoint(imageReader(i, j));
-        results[i][j] = calc();
+        this.results[i][j] = calc();
       }
     }
-    return results;
+    if(parent != null){
+      parent.saveResult(this.ID, this.results);
+    }
+    calculating = false;
   }
 
   public BufferedImage imageReader(int number, int ID){
@@ -128,20 +138,11 @@ public class NetworkManager {
  * @param result [chocen number][ID of picture][result from network]
  */
   public void Backpropagation(float[][][] actualResult){
-    float totalCost = 0f;
-    for (int i = minNumber; i < maxNumber-minNumber+1; i++) {
-      for (int j = 0; j < highestID; j++) {
-        float cost = 0f;
-        for (int l = 0; l < actualResult[i][j].length; l++) {
-          if(l == i){
-            cost += (float) Math.pow(1-actualResult[i][j][l],2);
-          }else{
-            cost += (float) Math.pow(actualResult[i][j][l],2);
-          }
-        }
-        
-      }
-    }
+    
+  }
+
+  public synchronized float[][][] getResult(){
+    return this.results;
   }
 
   public float getCost(float[][][] result){
@@ -226,9 +227,12 @@ public class NetworkManager {
     for (int i = 0; i < networkSize.length; i++) {
       networkSize[i] = network[i+1].length;
     }
-    NetworkManager NetworkNetwork = new NetworkManager(highestID,networkSize,minNumber,maxNumber);
+    NetworkManager NetworkNetwork = new NetworkManager(highestID,networkSize,minNumber,maxNumber,parent,ID);
     NetworkNetwork.setAllBias(getAllBias());
     NetworkNetwork.setAllWeights(getAllWeights());
     return NetworkNetwork;
+  }
+  public void setID(int ID){
+    this.ID = ID;
   }
 }
