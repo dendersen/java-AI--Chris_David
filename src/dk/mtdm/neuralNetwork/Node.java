@@ -1,14 +1,13 @@
 package dk.mtdm.neuralNetwork;
 
 import java.awt.image.BufferedImage;
-import java.util.function.Function;
 
 public class Node {
   protected float bias;
   protected float[] weights;
   protected Float output;
   protected Node[] pulls;
-  protected Function<? super Float, ? extends Float> activationFunction;
+  protected SigmoidCurve activationFunction;
   /**
    * 
    * @param bias the biasses of the neural network
@@ -17,7 +16,7 @@ public class Node {
    * @throws Exception if pulls is of different length than weights
    */
   protected Node(){}
-  public Node(float bias, float[] weights, Node[] pulls, Function<? super Float, ? extends Float> ActivationFunction) throws Exception{
+  public Node(float bias, float[] weights, Node[] pulls, SigmoidCurve ActivationFunction) throws Exception{
     this.bias = bias;
     this.weights = weights;
     this.pulls = pulls;
@@ -30,17 +29,18 @@ public class Node {
   /**
    * @return the output of the 
    */
-  public float calc(){
+  public float[] calc(){
     float out = this.bias;
     for (int i = 0; i < this.weights.length; i++) {
       out += pulls[i].getValue() * this.weights[i];
     }
     output = activationFunction.apply(out);
-    return output;
+    float[] z = {output,out};
+    return z;
   }
   public float getValue(){
     if(output == null){
-      return calc();
+      return calc()[0];
     }
     return output;
   }
@@ -78,4 +78,7 @@ public class Node {
   }
 
   public void setPicture(BufferedImage input){}
+  public SigmoidCurve getCurve(){
+    return activationFunction;
+  }
 }

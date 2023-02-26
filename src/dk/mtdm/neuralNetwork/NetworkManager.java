@@ -13,9 +13,12 @@ public class NetworkManager extends Thread {
   private int minNumber;
   private int maxNumber;
   private float[][][] results;
-  private boolean calculating = false;
+  public boolean calculating = false;
   private MultiNetworkManager parent;
   private int ID;
+  private SigmoidCurve normalFunktion;
+  private SigmoidCurve outputFunktion;
+  private float[][][][][] z;
   /**
    * 
    * @param testIDend highest ID to be tested (can be understood as testsize) (exlusive)
@@ -23,12 +26,14 @@ public class NetworkManager extends Thread {
    * @param minNumber the lowest number to be tested (inclusive)
    * @param maxNumber the highest number to be tested (inclusive)
    */
-  public NetworkManager(int testIDEnd, int[] networkSize, int minNumber, int maxNumber, MultiNetworkManager resultLoad, int ID){
+  public NetworkManager(int testIDEnd, int[] networkSize, int minNumber, int maxNumber, MultiNetworkManager resultLoad, int ID, SigmoidCurve StandardNodeMath, SigmoidCurve outputNodeMath){
     highestID = testIDEnd;
     this.minNumber = minNumber;
     this.maxNumber = maxNumber;
     this.parent = resultLoad;
     this.ID = ID;
+    this.normalFunktion = StandardNodeMath;
+    this.outputFunktion = outputNodeMath;
 
     //intialize array
     {
@@ -56,7 +61,7 @@ public class NetworkManager extends Thread {
         }
         //create node
         try {
-          this.network[i][j] = new Node(RandomBias(),weights,network[i-1],SigmoidCurves.coolTanh);
+          this.network[i][j] = new Node(RandomBias(),weights,network[i-1],StandardNodeMath);
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -73,7 +78,7 @@ public class NetworkManager extends Thread {
         }
         //create node
         try {
-          this.network[network.length-1][i] = new Node(RandomBias(),weights,network[network.length-2],SigmoidCurves.logistic);
+          this.network[network.length-1][i] = new Node(RandomBias(),weights,network[network.length-2],outputNodeMath);
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -83,15 +88,17 @@ public class NetworkManager extends Thread {
   }
 
   private float RandomBias() {
-    return ((float) Math.random()*2-1)/10;
+    return ((float) Math.random()*2-1);
   }
   private float RandomWeight() {
-    return ((float) Math.random()*2-1)*3;
+    return ((float) Math.random()*2-1);
   }
-  public float[] calc(){
+  public float[] calc(int answer, int ID){
+    z[answer][ID] = new float[network.length][][];
     for (int i = 1; i < network.length; i++) {
+      z[answer][ID][i] = new float[network[i].length][];
       for (int j = 0; j < network[i].length; j++) {
-        this.network[i][j].calc();
+        this.z[answer][ID][i][j] = this.network[i][j].calc();
       }
     }
     //get value from last layer
@@ -111,10 +118,11 @@ public class NetworkManager extends Thread {
   @Override
   public void run(){
     calculating = true;
+    z = new float[maxNumber-minNumber+1][highestID][][][];
     for (int i = this.minNumber; i <= this.maxNumber; i++) {
       for (int j = 1; j < highestID; j++) {
         setDataPoint(imageReader(i, j));
-        this.results[i][j] = calc();
+        this.results[i][j] = calc(i,j);
       }
     }
     if(parent != null){
@@ -137,9 +145,43 @@ public class NetworkManager extends Thread {
  * 
  * @param result [chocen number][ID of picture][result from network]
  */
-  public void Backpropagation(float[][][] actualResult){
+  public void stochasticGradientDescent(float eta){
+    
+
+    float[][] biases = new float[network.length][];
+    float[][][] weights = new float[network.length][][];
+    for (int i = 0; i < network.length; i++) {
+      biases[i] = new float[network[i].length];
+      for (int j = 0; j < network[i].length; j++) {
+        biases[i][j] = network[i][j].getBias();
+      }
+    }
+    for (int i = 0; i < network.length; i++) {
+      weights[i] = new float[network[i].length][];
+      for (int j = 0; j < network[i].length; j++) {
+        weights[i][j] = network[i][j].getWeights();
+      }
+    }
+    for (int i = minNumber; i < highestID; i++) {
+      for (int j = 0; j < this.highestID; j++) {
+        backPropagation(i,j);
+      }
+    }
+  }
+  private void backPropagation(int answer,int inputID){
     
   }
+    //run backpropagation on all dataPieces
+    
+    //save weight change and bias change 
+    
+    //gem alle node aktiverings niveauer
+    //gem også i zs som er det samme som activations men før activation funktion
+    
+    //impliment magical number
+    
+    //
+  
 
   public synchronized float[][][] getResult(){
     return this.results;
@@ -158,7 +200,33 @@ public class NetworkManager extends Thread {
         }
       }
     }
-    return totalCost;
+    return 1/((2*(maxNumber-minNumber+1))*highestID)*totalCost;
+  }
+
+  public int getCorrect(){
+    int correct = 0;
+    for (int i = minNumber; i < maxNumber-minNumber+1; i++) {
+      for (int j = 0; j < highestID; j++) {
+        int highest = minNumber;
+        for (int l = minNumber+1; l < maxNumber-minNumber+1; l++) {
+          if(results[i][j][l] > results[i][j][highest]){
+            highest = l;
+          }
+        }
+        if(highest == i){
+          correct++;
+        }
+      }
+    }
+    return correct;
+  }
+
+  public float[] deriCost(float[] guess, float[] answer){
+    float[] out = new float[guess.length];
+    for (int i = 0; i < out.length; i++) {
+      out[i] = guess[i] - answer[i];
+    }
+    return out;
   }
 
   public void randomChange(float width){
@@ -227,7 +295,7 @@ public class NetworkManager extends Thread {
     for (int i = 0; i < networkSize.length; i++) {
       networkSize[i] = network[i+1].length;
     }
-    NetworkManager NetworkNetwork = new NetworkManager(highestID,networkSize,minNumber,maxNumber,parent,ID);
+    NetworkManager NetworkNetwork = new NetworkManager(highestID,networkSize,minNumber,maxNumber,parent,ID,normalFunktion,outputFunktion);
     NetworkNetwork.setAllBias(getAllBias());
     NetworkNetwork.setAllWeights(getAllWeights());
     return NetworkNetwork;

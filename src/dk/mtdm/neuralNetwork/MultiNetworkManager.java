@@ -12,7 +12,7 @@ public class MultiNetworkManager {
     this.networks = new NetworkManager[numberOfNetworks];
     this.results = new float[numberOfNetworks][][][];
     for (int i = 0; i < numberOfNetworks; i++) {
-      networks[i] = new NetworkManager(testIDEnd, networkSize, minNumber, maxNumber,this,i);
+      networks[i] = new NetworkManager(testIDEnd, networkSize, minNumber, maxNumber,this,i,SigmoidCurves.Tanh,SigmoidCurves.logi);
     }
   }
   

@@ -14,9 +14,10 @@ public class InputNode extends Node{
     y = ID_Y;
   }
   @Override
-  public float calc(){
+  public float[] calc(){
     this.output = (float)((img.getRGB(x, y)>>16)&255)/255;
-    return this.output;
+    float[] out = {this.output,this.output};
+    return out;
   }
   @Override
   public void setBias(float bias){}
