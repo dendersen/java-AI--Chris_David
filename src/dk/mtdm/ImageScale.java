@@ -90,7 +90,7 @@ public class ImageScale{
         }
       }
     }
-    int[] out = {height/2,width/2};
+    int[] out = {height,width};
     return out;
   }
 

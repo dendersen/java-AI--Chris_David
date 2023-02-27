@@ -19,7 +19,7 @@ public class MultiNetworkManager {
   public float[][][][] runAll(){
     for (int i = 0; i < networks.length; i++) {
       networks[i].start();
-      if((i+1)%5 == 0){
+      if((i+1)%reports == 0){
         System.out.print("started: " + (i+1) + "/" + networks.length + " ");
       }
     }
@@ -36,7 +36,7 @@ public class MultiNetworkManager {
         }else{
           finishCount++;
         }
-        if (maxFinishCount <= finishCount){
+        if (maxFinishCount < finishCount){
           maxFinishCount = finishCount;
           if(maxFinishCount%this.reports == 0){
             System.out.print("completed: " + maxFinishCount + " ");
@@ -65,6 +65,7 @@ public class MultiNetworkManager {
       cost[i] = networks[i].getCost(results[i]);
     }
     if(print){
+      System.out.println();
       for (int i = 0; i < cost.length; i++) {
         System.out.println("ID: " + i + "\tcost: " + cost[i]/numberOfPictures/10);
       }

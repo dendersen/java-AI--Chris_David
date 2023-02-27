@@ -15,13 +15,13 @@ public class Main {
   final public static String imagePathGet = "MNISTDataset\\numbers\\";
   private static MultiNetworkManager ais;
   public static void main(String[] args) {
-    int[] networkSize = {};
-    ais = new MultiNetworkManager(750, networkSize, 0, 9, 40, 10);
+    int[] networkSize = {20,20};
+    ais = new MultiNetworkManager(750, networkSize, 0, 9, 20, 5);
     for (int i = 0; i < 40; i++) {
       System.out.println("generation:" + (i+1) + "/" + 40);
       ais.runAll();
-      ais.getCost(false);
-      ais.trainRand(10, 0.5f/(i+1)*2,true);
+      ais.getCost(true);
+      ais.trainRand(2, 0.5f/(i+1)*2,true);
     }
   }
 

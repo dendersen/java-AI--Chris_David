@@ -200,7 +200,7 @@ public class NetworkManager extends Thread {
         }
       }
     }
-    return 1/((2*(maxNumber-minNumber+1))*highestID)*totalCost;
+    return 1f/((float)(((maxNumber-minNumber+1))*highestID))*totalCost;
   }
 
   public int getCorrect(){
