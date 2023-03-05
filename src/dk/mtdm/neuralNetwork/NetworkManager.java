@@ -88,10 +88,10 @@ public class NetworkManager extends Thread {
   }
 
   private float RandomBias() {
-    return ((float) Math.random()*2-1);
+    return ((float) Math.random()*2-1)/4;
   }
   private float RandomWeight() {
-    return ((float) Math.random()*2-1);
+    return ((float) Math.random()*2-1)/3;
   }
   public float[] calc(int answer, int ID){
     z[answer][ID] = new float[network.length][][];
@@ -229,13 +229,19 @@ public class NetworkManager extends Thread {
     return out;
   }
 
-  public void randomChange(float width){
+  public void randomChange(float width, float chance){
     for (int i = 1; i < network.length; i++) {
       for (int j = 0; j < network[i].length; j++) {
-        network[i][j].modBias((float)(Math.random()*2-1)*width);
+        if(Math.random() < chance){
+          network[i][j].modBias((float)(Math.random()*2-1)*width);
+        }
         float[] weightChange = new float[network[i][j].getWeightLength()];
-        for (int l = 0; l < network[i][j].getWeightLength(); l++) {
-          weightChange[l] = (float)(Math.random()*2-1)*width;
+          for (int l = 0; l < network[i][j].getWeightLength(); l++) {
+          if(Math.random() < chance){
+            weightChange[l] = (float)(Math.random()*2-1)*width;
+          }else{
+            weightChange[l] = 0f;
+          }
         }
         try {
           network[i][j].modWeights(weightChange);

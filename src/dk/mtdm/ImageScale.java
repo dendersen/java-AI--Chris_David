@@ -66,32 +66,34 @@ public class ImageScale{
   }
 
   private static int[] findBiggest() {
-    int width = 0;
-    int height = 0;
-    System.out.println("loading");
-    for (int i = 0; i < 10; i++) {
-      for (int j = 1; j < 1001; j++){
-        if(j%200 == 0){
-          System.out.println(((i)*1000+j) + "/" + 10000 + "\tcomplete");
-        }
-        String path = Main.imagePathGet  + i + "\\" + i + "_" + j +".jpg";
-        BufferedImage img = null;
-        try {
-          File file = new File(path);
-          img = ImageIO.read(file);
-        } catch (IOException e) {
-          System.out.println(e);
-        }
-        if(width < img.getWidth()){
-          width = img.getWidth();
-        }
-        if(height < img.getWidth()){
-          height = img.getHeight();
-        }
-      }
-    }
-    int[] out = {height,width};
+    int[] out = {50,50};
     return out;
+    // int width = 0;
+    // int height = 0;
+    // System.out.println("loading");
+    // for (int i = 0; i < 10; i++) {
+    //   for (int j = 1; j < 1001; j++){
+    //     if(j%200 == 0){
+    //       System.out.println(((i)*1000+j) + "/" + 10000 + "\tcomplete");
+    //     }
+    //     String path = Main.imagePathGet  + i + "\\" + i + "_" + j +".jpg";
+    //     BufferedImage img = null;
+    //     try {
+    //       File file = new File(path);
+    //       img = ImageIO.read(file);
+    //     } catch (IOException e) {
+    //       System.out.println(e);
+    //     }
+    //     if(width < img.getWidth()){
+    //       width = img.getWidth();
+    //     }
+    //     if(height < img.getWidth()){
+    //       height = img.getHeight();
+    //     }
+    //   }
+    // }
+    // int[] out = {50,50};
+    // return out;
   }
 
 

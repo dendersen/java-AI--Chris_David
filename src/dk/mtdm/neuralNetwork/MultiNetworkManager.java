@@ -1,12 +1,17 @@
 package dk.mtdm.neuralNetwork;
 
+import java.io.IOException;
+
 public class MultiNetworkManager {
   NetworkManager[] networks;
   float[][][][] results;
   int reports;
   int numberOfPictures;
   float[] cost;
+  float[] topRange = new float[2];
   public MultiNetworkManager(int testIDEnd, int[] networkSize, int minNumber, int maxNumber, int numberOfNetworks, int reports){
+    this.topRange[0] = Float.MAX_VALUE;
+    this.topRange[1] = Float.MAX_VALUE;
     this.numberOfPictures = testIDEnd;
     this.reports = reports;
     this.networks = new NetworkManager[numberOfNetworks];
@@ -16,11 +21,11 @@ public class MultiNetworkManager {
     }
   }
   
-  public float[][][][] runAll(){
+  public float[][][][] runAll(boolean clear){
     for (int i = 0; i < networks.length; i++) {
       networks[i].start();
       if((i+1)%reports == 0){
-        System.out.print("started: " + (i+1) + "/" + networks.length + " ");
+        System.out.print("started: " + (i+1) + "/" + networks.length + "           \r");
       }
     }
     int maxFinishCount = 0;
@@ -39,11 +44,20 @@ public class MultiNetworkManager {
         if (maxFinishCount < finishCount){
           maxFinishCount = finishCount;
           if(maxFinishCount%this.reports == 0){
-            System.out.print("completed: " + maxFinishCount + " ");
+            System.out.print("completed: " + maxFinishCount + "/" + networks.length + "                   \r");
           }
         }
       }
     }
+    if(clear){
+      try {
+        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+      } catch (InterruptedException | IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+    System.out.println();
     try {
       Thread.sleep(100);
     } catch (InterruptedException e) {
@@ -59,23 +73,23 @@ public class MultiNetworkManager {
     this.results[ID] = result;
   }
 
-  public float[] getCost(boolean print){
+  public float[] getCost(int print){
     cost = new float[networks.length];
     for (int i = 0; i < networks.length; i++) {
       cost[i] = networks[i].getCost(results[i]);
     }
-    if(print){
+    if(print>0){
       System.out.println();
-      for (int i = 0; i < cost.length; i++) {
-        System.out.println("ID: " + i + "\tcost: " + cost[i]/numberOfPictures/10);
+      for (int i = 0; i < cost.length && i < print; i++) {
+        System.out.println("ID: " + i + "\tcost: " + cost[i]);
       }
     }
     return cost;
   }
 
-  public void trainRand(int numberOfParents, float change, boolean print){
+  public void trainRand(int numberOfParents, float change,float chance, boolean print){
     if(cost == null){
-      getCost(false);
+      getCost(0);
     }
     NetworkManager[] networktemp = new NetworkManager[numberOfParents];
     int[] win = new int[numberOfParents];
@@ -104,8 +118,13 @@ public class MultiNetworkManager {
       }
       win[i] = best;
     }
-    if(print){
-      System.out.println("bestScore: " + (cost[win[0]]/numberOfPictures/10));
+    if(cost[win[0]] < topRange[0] && print){
+      System.out.println("improve best:  " + -(cost[win[0]]-topRange[0]));
+      topRange[0] = cost[win[0]];
+    }
+    if(cost[win[win.length-1]] < topRange[1] && print){
+      System.out.println("improve worst: " + -(cost[win[win.length-1]]-topRange[1]));
+      topRange[1] = cost[win[win.length-1]];
     }
     for (int i = 0; i < win.length; i++) {
       networktemp[i] = networks[win[i]];
@@ -115,11 +134,14 @@ public class MultiNetworkManager {
     }
     for (int i = networktemp.length; i < networks.length; i++) { //make children
       networks[i] = networks[i-networktemp.length%numberOfParents].copy();
-      networks[i].randomChange(change);
+      networks[i].randomChange(change,chance);
     }
     for (int j = 0; j < networks.length; j++) {
       networks[j].setID(j);
     }
     this.results = new float[this.networks.length][][][];
+    if(print){
+      System.out.println("bestScore: " + (cost[win[0]]));
+    }
   }
 }
